@@ -1,57 +1,66 @@
-# api_phoenix_elixir_hello-world
+# Hello World API: Phoenix + Elixir Sample
 
-A sample elixir phoenix api project to demonstrate securing your app using Auth0
+You can use this sample project to learn how to secure a simple Phoenix API server using Auth0.
+
+The `starter` branch offers a working API server that exposes three public endpoints. Each endpoint returns a different type of message: public, protected, and admin.
+
+The goal is to use Auth0 to only allow requests that contain a valid access token in their authorization header to access the protected and admin data. Additionally, only access tokens that contain a `read:admin-messages` permission should access the admin data, which is referred to as [Role-Based Access Control (RBAC)](https://auth0.com/docs/authorization/rbac/).
 
 ## Setup
 
 ### Install Elixir
 
-Install elixir by following the installation guide [here](http://elixir-lang.org/install.html)
+If needed, install Elixir by following the [official installation guide](http://elixir-lang.org/install.html).
 
-Installation can be verified by running `elixir -v` which would print the elixir version.
+Once complete, you can verify your Elixir installation by running `elixir -v`, which prints the version of Elixir present in your system:
 
-```
+```bash
 elixir -v
 
 Erlang/OTP 24 [erts-12.1.1] [source] [64-bit] [smp:48:48] [ds:48:48:10] [async-threads:1] [jit]
 Elixir 1.12.3 (compiled with Erlang/OTP 24)
 ```
 
+### Install the Hex package manager
 
-### Installing Hex package manager
+If needed, install the `hex` package manager:
 
-After installing elixir for the first time, we will need to install hex - the package manager.
-
-```
+```bash
 mix local.hex
 ```
 
-### Installing dependencies
+### Install project dependencies
 
-Once we have Elixir installed, we can fetch and install dependencies by running:
+You can fetch and install dependencies by running the following commmand:
 
-```
+```bash
 mix deps.get
 ```
 
-## Environment Variables
+## Define Environment Variables
 
-Create a `.env` file under the root project directory and populate it with the following environment variables
+Create a `.env` file under the root project directory and populate it with the following environment variables:
 
+```bash
+PORT=6060
+CLIENT_ORIGIN_URL=http://localhost:4040
+```
 
 | Variable           | Default                 | Description                            |
 | ------------------ | ----------------------- | -------------------------------------- |
 |  PORT              | 6060                    | Port the application accepts requests  |
 |  CLIENT_ORIGIN_URL | http://localhost:4040   | Origin from which API accepts requests |
 
-## Configuration
+
+## Project Configuration
 
 ### CORS
 
-We will allow the API server to connect from clients defined using the env variable `CLIENT_ORIGIN_URL`.
-To enable CORS support, we will use the package [`cors_plug`](https://github.com/mschae/cors_plug)
+You'll restrict the API server to only serve requests from a client with the origin whose value matches the `CLIENT_ORIGIN_URL` environment variable.
 
-Add `cors_plug` to the list of dependencies in `mix.exs` file.
+You can implement such restriction by enabling CORS support using the [`cors_plug` package](https://github.com/mschae/cors_plug).
+
+Add `cors_plug` to the list of dependencies in the `mix.exs` file:
 
 ```diff
   defp deps do
@@ -67,16 +76,20 @@ Add `cors_plug` to the list of dependencies in `mix.exs` file.
   end
 ```
 
-And run `mix deps.get`
+Then, run the following command to install that new dependency:
 
-Once the dependency is installed, we need to add the CORS config by adding the following likes to `config/config.exs`
+```bash
+mix deps.get
+```
+
+Once `cors_plug` is installed, add set up CORS in the project by adding the following lines to `config/config.exs`:
 
 ```diff
 +config :cors_plug,
 +  origin: [System.get_env("CLIENT_ORIGIN_URL", "http://localhost:4040")]
 ```
 
-And add the plug `CORSPlug` above the `Router` in the endpoint config located at `lib/api_phoenix_elixir_hello_world_web/endpoint.ex`
+Next, open `lib/api_phoenix_elixir_hello_world_web/endpoint.ex` and add the `CORSPlug` plug above the `Router` plug:
 
 ```diff
    plug Plug.Session, @session_options
@@ -84,12 +97,21 @@ And add the plug `CORSPlug` above the `Router` in the endpoint config located at
    plug ApiPhoenixElixirHelloWorldWeb.Router
 ```
 
-## Development
+## Run the Project in Development Mode
 
+Start your Phoenix API server by running the following command:
 
-Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+```bash
+mix phx.server
+```
 
-Now you can visit [`localhost:6060`](http://localhost:6060) from your browser.
+You can also run the server inside IEx by running the following command instead:
+
+```bash
+iex -S mix phx.server
+```
+
+You can then make requests to `http://localhost:6060/api/message/type` to test that your API server is working.
 
 ## API Endpoints
 
@@ -97,7 +119,7 @@ The API server defines the following endpoints:
 
 ### 🔓 Get public message
 
-```
+```bash
 $ http localhost:6060/api/messages/public
 HTTP/1.1 200 OK
 cache-control: max-age=0, private, must-revalidate
@@ -114,7 +136,7 @@ x-request-id: Fq3jRiya7fLA6_AAAAAt
 
 ### 🔓 Get protected message
 
-```
+```bash
 $ http localhost:6060/api/messages/protected
 
 HTTP/1.1 200 OK
@@ -133,7 +155,7 @@ x-request-id: Fq3jUEh_MfaUQEUAAAAB
 
 ### 🔓 Get admin message
 
-```
+```bash
 $ http localhost:6060/api/messages/admin    
 HTTP/1.1 200 OK
 cache-control: max-age=0, private, must-revalidate
