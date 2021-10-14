@@ -44,12 +44,15 @@ Create a `.env` file under the root project directory and populate it with the f
 ```bash
 PORT=6060
 CLIENT_ORIGIN_URL=http://localhost:4040
+SECRET_KEY_BASE=your_secret_key
+
 ```
 
-| Variable           | Default                 | Description                            |
-| ------------------ | ----------------------- | -------------------------------------- |
-|  PORT              | 6060                    | Port the application accepts requests  |
-|  CLIENT_ORIGIN_URL | http://localhost:4040   | Origin from which API accepts requests |
+| Variable           | Default                 | Description                                     |
+| ------------------ | ----------------------- | ----------------------------------------------- |
+|  PORT              | 6060                    | Port the application accepts requests           |
+|  CLIENT_ORIGIN_URL | http://localhost:4040   | Origin from which API accepts requests          |
+|  SECRET_KEY_BASE   |                         | used to sign/encrypt cookies and other secrets. |
 
 
 ## Project Configuration
