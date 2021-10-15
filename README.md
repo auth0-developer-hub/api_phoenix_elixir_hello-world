@@ -54,6 +54,8 @@ SECRET_KEY_BASE=your_secret_key
 |  CLIENT_ORIGIN_URL | http://localhost:4040   | Origin from which API accepts requests          |
 |  SECRET_KEY_BASE   |                         | used to sign/encrypt cookies and other secrets. |
 
+You can generate `SECRET_KEY_BASE` by executing the following command as [recommended by the Phoenix framework](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Secret.html):
+ `mix phx.gen.secret`
 
 ## Project Configuration
 
