@@ -25,6 +25,10 @@ config :phoenix, :json_library, Jason
 config :cors_plug,
   origin: [System.get_env("CLIENT_ORIGIN_URL", "http://localhost:4040")]
 
+config :hello_world,
+  auth0_domain: System.get_env("AUTH0_DOMAIN"),
+  auth0_audience: System.get_env("AUTH0_AUDIENCE")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
