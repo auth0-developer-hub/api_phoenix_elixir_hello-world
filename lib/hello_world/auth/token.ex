@@ -1,6 +1,6 @@
 defmodule HelloWorld.Auth.Token do
   @moduledoc """
-  Customises the Joken config to verify and validate claims.
+  Customizes the Joken config to verify and validate claims.
   """
   use Joken.Config, default_signer: nil
 
