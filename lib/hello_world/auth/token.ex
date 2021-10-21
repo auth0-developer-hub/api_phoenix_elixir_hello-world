@@ -4,9 +4,9 @@ defmodule HelloWorld.Auth.Token do
   """
   use Joken.Config, default_signer: nil
 
-  alias HelloWorld.Auth.Strategy
+  alias HelloWorld.Auth.Auth0Strategy
 
-  add_hook(JokenJwks, strategy: Strategy)
+  add_hook(JokenJwks, strategy: Auth0Strategy)
 
   @impl true
   def token_config do

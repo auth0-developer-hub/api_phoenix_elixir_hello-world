@@ -146,10 +146,10 @@ Next, we will add Auth0 domain and audience to our configuration. Open `config/c
 
 We will now create a custom strategy for `JokenJwks` so that we can use our Auth0 domain.
 
-Create a new file `lib/hello_world/auth/strategy.ex` and add the following
+Create a new file `lib/hello_world/auth/auth0_strategy.ex` and add the following
 
 ```elixir
-defmodule HelloWorld.Auth.Strategy do
+defmodule HelloWorld.Auth.Auth0Strategy do
   @moduledoc """
   Defines a custom Strategy for JokenJwks using a custom jwks domain.
   """
@@ -176,7 +176,7 @@ References:
 
 Now, we have to add our custom strategy to our application's supervision tree.
 
-Open `lib/hello_world/application.ex` and add `HelloWorld.Auth.Strategy` to the list of `children` inside the `start/2` function.
+Open `lib/hello_world/application.ex` and add `HelloWorld.Auth.Auth0Strategy` to the list of `children` inside the `start/2` function.
 
 ```diff
   def start(_type, _args) do
@@ -189,7 +189,7 @@ Open `lib/hello_world/application.ex` and add `HelloWorld.Auth.Strategy` to the 
 +     HelloWorldWeb.Endpoint,
       # Start a worker by calling: HelloWorld.Worker.start_link(arg)
       # {HelloWorld.Worker, arg}
-+     HelloWorld.Auth.Strategy
++     HelloWorld.Auth.Auth0Strategy
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -213,9 +213,9 @@ defmodule HelloWorld.Auth.Token do
   """
   use Joken.Config, default_signer: nil
 
-  alias HelloWorld.Auth.Strategy
+  alias HelloWorld.Auth.Auth0Strategy
 
-  add_hook(JokenJwks, strategy: Strategy)
+  add_hook(JokenJwks, strategy: Auth0Strategy)
 
   @impl true
   def token_config do
@@ -238,7 +238,7 @@ use Joken.Config, default_signer: nil
 Here, we are customizing the `Joken.Config` and setting `default_signer` to nil, so that we can override the signer in the next step.
 
 ```elixir
-add_hook(JokenJwks, strategy: Strategy)
+add_hook(JokenJwks, strategy: Auth0Strategy)
 ```
 Since Auth0 is our token signing provider instead of our application, we will utilize the `add_hook` function callback to use the custom strategy we created in the step above.
 

@@ -16,7 +16,7 @@ defmodule HelloWorld.Application do
       HelloWorldWeb.Endpoint,
       # Start a worker by calling: HelloWorld.Worker.start_link(arg)
       # {HelloWorld.Worker, arg}
-      HelloWorld.Auth.Strategy
+      HelloWorld.Auth.Auth0Strategy
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
