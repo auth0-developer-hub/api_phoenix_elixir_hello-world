@@ -1,4 +1,4 @@
-defmodule HelloWorld.Auth.Strategy do
+defmodule HelloWorld.Auth.Auth0Strategy do
   @moduledoc """
   Defines a custom Strategy for JokenJwks using a custom jwks domain.
   """
