@@ -22,9 +22,6 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :cors_plug,
-  origin: [System.get_env("CLIENT_ORIGIN_URL", "http://localhost:4040")]
-
 config :hello_world,
   auth0_domain: System.get_env("AUTH0_DOMAIN"),
   auth0_audience: System.get_env("AUTH0_AUDIENCE")
