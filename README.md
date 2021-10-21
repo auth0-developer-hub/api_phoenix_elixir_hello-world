@@ -106,239 +106,53 @@ Next, open `lib/hello_world_web/endpoint.ex` and add the `CORSPlug` plug above t
    plug HelloWorldWeb.Router
 ```
 
-## Authorization
+### Register an Elixir/Phoenix API with Auth0
 
-In this section, we will secure 2 endpoints by adding authentication using JWT access tokens.
+- Open the [APIs](https://manage.auth0.com/#/apis) section of the Auth0 Dashboard.
 
-We will start by adding the following packages to our `mix.exs` file.
+- Click on the **Create API** button.
 
-* [joken](https://hexdocs.pm/joken/readme.html)
-* [joken_jwks](https://hexdocs.pm/joken_jwks/readme.html)
+- Provide a **Name** value such as _Hello World API Server_.
 
-Open `mix.exs` file and add the following:
+- Set its **Identifier** to `https://api.example.com` or any other value of your liking.
 
-```diff
-  defp deps do
-    [
-      {:phoenix, "~> 1.6.2"},
-      {:phoenix_live_dashboard, "~> 0.5"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"},
-+     {:cors_plug, "~> 2.0"},
-+     {:joken, "~> 2.4"},
-+     {:joken_jwks, "~> 1.5"}
-    ]
-  end
-```
+- Leave the signing algorithm as `RS256` as it's the best option from a security standpoint.
 
-Run `mix deps.get` to install the newly added packages.
+- Click on the **Create** button.
 
-Next, we will add Auth0 domain and audience to our configuration. Open `config/config.exs` and add the following
+> View ["Register APIs" document](https://auth0.com/docs/get-started/set-up-apis) for more details.
 
-```diff
-+ config :hello_world,
-+  auth0_domain: System.get_env("AUTH0_DOMAIN"),
-+  auth0_audience: System.get_env("AUTH0_AUDIENCE")
+### Connect Elixir/Phoenix API with Auth0
 
-```
+Get the values for `AUTH0_AUDIENCE` and `AUTH0_DOMAIN` in `.env` from your Auth0 API in the Dashboard.
 
-We will now create a custom strategy for `JokenJwks` so that we can use our Auth0 domain.
+Head back to your Auth0 API page, and **follow these steps to get the Auth0 Audience**:
 
-Create a new file `lib/hello_world/auth/auth0_strategy.ex` and add the following
+![Get the Auth0 Audience to configure an API](https://cdn.auth0.com/blog/complete-guide-to-user-authentication/get-the-auth0-audience.png)
 
-```elixir
-defmodule HelloWorld.Auth.Auth0Strategy do
-  @moduledoc """
-  Defines a custom Strategy for JokenJwks using a custom jwks domain.
-  """
-  use JokenJwks.DefaultStrategyTemplate
+1. Click on the **"Settings"** tab.
 
-  def init_opts(opts) do
-    Keyword.merge(opts, jwks_url: jwks_url())
-  end
+2. Locate the **"Identifier"** field and copy its value.
 
-  defp jwks_url do
-    Application.get_env(:hello_world, :auth0_domain) <> ".well-known/jwks.json"
-  end
-end
-```
+3. Paste the "Identifier" value as the value of `AUTH0_AUDIENCE` in `.env`.
 
-This module implements a custom strategy for `JokenJwks`.
+Now, **follow these steps to get the Auth0 Domain value**:
 
-In the `init_opts/1` callback, we override the `jwks_url` by passing `jwks_url` function,
-which retrieves the Auth0 domain that we configured above, and points to the JWKS endpoint of our tenant.
+![Get the Auth0 Domain to configure an API](https://cdn.auth0.com/blog/complete-guide-to-user-authentication/get-the-auth0-domain.png)
 
-References:
-[JokenJwks Strategy](https://hexdocs.pm/joken_jwks/JokenJwks.DefaultStrategyTemplate.html#content)
-[JSON Web Key Sets](https://auth0.com/docs/security/tokens/json-web-tokens/json-web-key-sets)
+1. Click on the **"Test"** tab.
+2. Locate the section called **"Asking Auth0 for tokens from my application"**.
+3. Click on the **cURL** tab to show a mock `POST` request.
+4. Copy your Auth0 domain, which is _part_ of the `--url` parameter value: `tenant-name.region.auth0.com`.
+5. Paste the Auth0 domain value as the value of `AUTH0_DOMAIN` in `.env`.
 
-Now, we have to add our custom strategy to our application's supervision tree.
+**Tips to get the Auth0 Domain**
 
-Open `lib/hello_world/application.ex` and add `HelloWorld.Auth.Auth0Strategy` to the list of `children` inside the `start/2` function.
+- The Auth0 Domain is the substring between the protocol, `https://` and the path `/oauth/token`.
 
-```diff
-  def start(_type, _args) do
-    children = [
-      # Start the Telemetry supervisor
-      HelloWorldWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: HelloWorld.PubSub},
-      # Start the Endpoint (http/https)
-+     HelloWorldWeb.Endpoint,
-      # Start a worker by calling: HelloWorld.Worker.start_link(arg)
-      # {HelloWorld.Worker, arg}
-+     HelloWorld.Auth.Auth0Strategy
-    ]
+- The Auth0 Domain follows this pattern: `tenant-name.region.auth0.com`.
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: HelloWorld.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
-```
-
-References:
-[Supervisor and Application](https://elixir-lang.org/getting-started/mix-otp/supervisor-and-application.html)
-
-Now, let's implement a module that verifies and validates our JWT token.
-
-Create a new file `lib/hello_world/auth/token.ex` with the following
-
-```elixir
-defmodule HelloWorld.Auth.Token do
-  @moduledoc """
-  Customizes the Joken config to verify and validate claims.
-  """
-  use Joken.Config, default_signer: nil
-
-  alias HelloWorld.Auth.Auth0Strategy
-
-  add_hook(JokenJwks, strategy: Auth0Strategy)
-
-  @impl true
-  def token_config do
-    default_claims(skip: [:aud, :iss])
-    |> add_claim("iss", nil, &(&1 == iss()))
-    |> add_claim("aud", nil, &(&1 == aud()))
-  end
-
-  defp iss(), do: Application.get_env(:hello_world, :auth0_domain)
-  defp aud(), do: Application.get_env(:hello_world, :auth0_audience)
-end
-```
-
-Explanation:
-
-```elixir
-use Joken.Config, default_signer: nil
-```
-
-Here, we are customizing the `Joken.Config` and setting `default_signer` to nil, so that we can override the signer in the next step.
-
-```elixir
-add_hook(JokenJwks, strategy: Auth0Strategy)
-```
-Since Auth0 is our token signing provider instead of our application, we will utilize the `add_hook` function callback to use the custom strategy we created in the step above.
-
-```elixir
-  def token_config do
-    default_claims(skip: [:aud, :iss])
-    |> add_claim("iss", nil, &(&1 == iss()))
-    |> add_claim("aud", nil, &(&1 == aud()))
-  end
-```
-
-We will implement a custom `token_config` callback, where we verify that the `issuer` and the `audience` of the token is the same as the issuer and audience of our application.
-
-References:
-[Overriding token_config/0](https://hexdocs.pm/joken/configuration.html#overriding-token_config-0)
-
-Now, that we have added a module to verify and validate the JWT token, let's add a `Plug` that we can use to verify the access token that gets passed to the request header.
-
-Create a new file `lib/hello_world/auth/authenticate.ex` with
-
-```elixir
-defmodule HelloWorld.Auth.Authenticate do
-  @moduledoc """
-  Plug for authenticating endpoints using Bearer authorization token.
-  """
-  @behaviour Plug
-
-  import Plug.Conn
-  import Phoenix.Controller, only: [json: 2]
-
-  alias HelloWorld.Auth.Token
-
-  @spec init(any) :: any
-  def init(default), do: default
-
-  @doc """
-  Extracts the Bearer token from the authorization header and verifies the claims.
-  """
-  @spec call(Plug.Conn.t(), any) :: Plug.Conn.t()
-  def call(conn, _default) do
-    with token when is_binary(token) <- get_token(conn),
-         {:ok, _claims} <- Token.verify_and_validate(token) do
-      conn
-    else
-      _ ->
-        conn
-        |> put_status(401)
-        |> json(%{message: "Unauthorized"})
-        |> halt
-    end
-  end
-
-  defp get_token(conn) do
-    case get_req_header(conn, "authorization") do
-      ["Bearer " <> token] -> token
-      [token] -> token
-      _ -> nil
-    end
-  end
-end
-```
-
-Explanation:
-We implement a module using Plug behaviour, which intercepts the `conn` struct, extracts the `authorization` header and verifies and validates the token using `HelloWorld.Auth.Token` we created above.
-
-`get_token/1` function extracts the headers using `get_req_header/2` function, and extracts the token from `Bearer token`
-We then pass the token to `Token.verify_and_validate(token)` which would return a `{:ok, _claims}` tuple or an `{:error, error}` tuple.
-In case of an error, we halt the connection and respond with `401` status code and `message: "Unauthorized"` message.
-
-References:
-[Plug Documentation](https://hexdocs.pm/plug/readme.html)
-
-
-Let's add this plug to our `lib/hello_world_web/router.ex` file.
-
-We will start by adding a new pipeline named `authentication`
-
-```diff
-+  pipeline :authentication do
-+    plug HelloWorld.Auth.Authenticate
-+  end
-```
-
-Now, let's update our routes, and move `/api/messages/protected` and `/api/messages/admin` inside the `authentication` pipeline
-
-```elixir
-  scope "/api", HelloWorldWeb.API, as: :api do
-    pipe_through [:api, :authentication]
-
-    scope "/messages" do
-      get "/protected", MessageController, :protected
-      get "/admin", MessageController, :admin
-    end
-  end
-```
-
-Any requests that are passed through this pipeline will utilize the Plug that we created above and will verify and validate the access token that is passed.
-
-References:
-[Phoenix pipeline](https://hexdocs.pm/phoenix/routing.html#pipelines)
+- The `region` subdomain (`au`, `us`, or `eu`) is optional. Some Auth0 Domains don't have it.
 
 ## Run the Project in Development Mode
 
