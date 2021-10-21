@@ -7,14 +7,8 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 
 # CLIENT_ORIGIN_URL is used to configure origin from which API accepts requests.
-client_origin_url =
-  System.get_env("CLIENT_ORIGIN_URL") ||
-    raise """
-    environment variable CLIENT_ORIGIN_URL is missing.
-    """
-
 config :cors_plug,
-  origin: [System.get_env("CLIENT_ORIGIN_URL")]
+  origin: System.fetch_env!("CLIENT_ORIGIN_URL")
 
 # The block below contains prod specific runtime configuration.
 if config_env() == :prod do
