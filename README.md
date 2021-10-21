@@ -87,11 +87,11 @@ Then, run the following command to install that new dependency:
 mix deps.get
 ```
 
-Once `cors_plug` is installed, add set up CORS in the project by adding the following lines to `config/config.exs`:
+Once `cors_plug` is installed, add set up CORS in the project by adding the following lines to `config/runtime.exs`:
 
 ```diff
 +config :cors_plug,
-+  origin: [System.get_env("CLIENT_ORIGIN_URL", "http://localhost:4040")]
++  origin: [System.get_env("CLIENT_ORIGIN_URL")]
 ```
 
 Next, open `lib/hello_world_web/endpoint.ex` and add the `CORSPlug` plug above the `Router` plug:

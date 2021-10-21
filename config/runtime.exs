@@ -5,6 +5,17 @@ import Config
 # system starts, so it is typically used to load production configuration
 # and secrets from environment variables or elsewhere. Do not define
 # any compile-time configuration in here, as it won't be applied.
+
+# CLIENT_ORIGIN_URL is used to configure origin from which API accepts requests.
+client_origin_url =
+  System.get_env("CLIENT_ORIGIN_URL") ||
+    raise """
+    environment variable CLIENT_ORIGIN_URL is missing.
+    """
+
+config :cors_plug,
+  origin: [System.get_env("CLIENT_ORIGIN_URL")]
+
 # The block below contains prod specific runtime configuration.
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
