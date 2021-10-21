@@ -95,7 +95,7 @@ Once `cors_plug` is installed, add set up CORS in the project by adding the foll
 
 ```diff
 +config :cors_plug,
-+  origin: [System.get_env("CLIENT_ORIGIN_URL")]
++  origin: System.fetch_env!("CLIENT_ORIGIN_URL")
 ```
 
 Next, open `lib/hello_world_web/endpoint.ex` and add the `CORSPlug` plug above the `Router` plug:
