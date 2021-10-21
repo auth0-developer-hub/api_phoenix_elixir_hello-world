@@ -12,14 +12,18 @@ defmodule HelloWorldWeb.Router do
   scope "/api", HelloWorldWeb.API, as: :api do
     pipe_through :api
 
-    get "/messages/public", MessageController, :public
+    scope "/messages" do
+      get "/public", MessageController, :public
+    end
   end
 
   scope "/api", HelloWorldWeb.API, as: :api do
     pipe_through [:api, :authentication]
 
-    get "/messages/protected", MessageController, :protected
-    get "/messages/admin", MessageController, :admin
+    scope "/messages" do
+      get "/protected", MessageController, :protected
+      get "/admin", MessageController, :admin
+    end
   end
 
   # Enables LiveDashboard only for development
