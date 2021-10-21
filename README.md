@@ -207,7 +207,7 @@ server: Cowboy
 x-request-id: FrAOSNARDSB6H3UAAAQZ
 
 {
-    "message": "Unauthorized"
+    "message": "No authorization token was found"
 }
 ```
 
@@ -284,7 +284,7 @@ server: Cowboy
 x-request-id: FrAOSNARDSB6H3UAAAQZ
 
 {
-    "message": "Unauthorized"
+    "message": "No authorization token was found"
 }
 ```
 
@@ -309,7 +309,7 @@ x-request-id: FrAOVvBgC0MYsOEAAASZ
 * With invalid header
 
 ```bash
-$ http localhost:6060/api/messages/admin "Auth: Bearer invalid-token"         
+$ http localhost:6060/api/messages/admin "Auth: Bearer invalid-token"
 
 HTTP/1.1 401 Unauthorized
 cache-control: max-age=0, private, must-revalidate
@@ -320,7 +320,7 @@ server: Cowboy
 x-request-id: FrAOYGKbE1XYCqYAAAWY
 
 {
-    "message": "Unauthorized"
+    "message": "No authorization token was found"
 }
 ```
 
