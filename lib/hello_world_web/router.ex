@@ -5,7 +5,7 @@ defmodule HelloWorldWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :authenticate do
+  pipeline :authentication do
     plug HelloWorld.Auth.Authenticate
   end
 
@@ -16,8 +16,7 @@ defmodule HelloWorldWeb.Router do
   end
 
   scope "/api", HelloWorldWeb.API, as: :api do
-    pipe_through :api
-    pipe_through :authenticate
+    pipe_through [:api, :authentication]
 
     get "/messages/protected", MessageController, :protected
     get "/messages/admin", MessageController, :admin
