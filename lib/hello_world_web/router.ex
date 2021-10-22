@@ -9,6 +9,13 @@ defmodule HelloWorldWeb.Router do
     plug HelloWorld.Auth.Authenticate
   end
 
+  @doc """
+  Authorized if the request has `read:admin-message` in the bearer token claims
+  """
+  pipeline :admin do
+    plug HelloWorld.Auth.Authorize, "read:admin-messages"
+  end
+
   scope "/api", HelloWorldWeb.API, as: :api do
     pipe_through :api
 
@@ -22,6 +29,13 @@ defmodule HelloWorldWeb.Router do
 
     scope "/messages" do
       get "/protected", MessageController, :protected
+    end
+  end
+
+  scope "/api", HelloWorldWeb.API, as: :api do
+    pipe_through [:api, :authentication, :admin]
+
+    scope "/messages" do
       get "/admin", MessageController, :admin
     end
   end

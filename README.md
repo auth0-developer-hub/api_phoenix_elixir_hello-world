@@ -279,7 +279,28 @@ x-request-id: FrAOYGKbE1XYCqYAAAWY
 }
 ```
 
-* With valid header and token
+* With valid header and token without `read:admin-messages` scope
+
+Bearer token is set in an env variable name `AUTH0_BEARER_TOKEN` for testing.
+
+```bash
+$ http localhost:6060/api/messages/admin "Authorization: Bearer $AUTH0_BEARER_TOKEN"
+
+HTTP/1.1 200 OK
+cache-control: max-age=0, private, must-revalidate
+content-length: 63
+content-type: application/json; charset=utf-8
+date: Thu, 21 Oct 2021 13:21:57 GMT
+server: Cowboy
+x-request-id: FrAOawV7yQxs8wkAAASB
+
+{
+    "message": "Insufficient scopes."
+}
+```
+
+
+* With valid header and token with `read:admin-messages` scope
 
 Bearer token is set in an env variable name `AUTH0_BEARER_TOKEN` for testing.
 
