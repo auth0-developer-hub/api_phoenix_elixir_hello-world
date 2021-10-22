@@ -61,51 +61,6 @@ AUTH0_AUDIENCE=auth0_audience
 You can generate `SECRET_KEY_BASE` by executing the following command as [recommended by the Phoenix framework](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Secret.html):
  `mix phx.gen.secret`
 
-## Project Configuration
-
-### CORS
-
-You'll restrict the API server to only serve requests from a client with the origin whose value matches the `CLIENT_ORIGIN_URL` environment variable.
-
-You can implement such restriction by enabling CORS support using the [`cors_plug` package](https://github.com/mschae/cors_plug).
-
-Add `cors_plug` to the list of dependencies in the `mix.exs` file:
-
-```diff
-  defp deps do
-    [
-      {:phoenix, "~> 1.6.2"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:jason, "~> 1.2"},
--     {:plug_cowboy, "~> 2.5"}
-+     {:plug_cowboy, "~> 2.5"},
-+     {:cors_plug, "~> 2.0"}
-    ]
-  end
-```
-
-Then, run the following command to install that new dependency:
-
-```bash
-mix deps.get
-```
-
-Once `cors_plug` is installed, add set up CORS in the project by adding the following lines to `config/runtime.exs`:
-
-```diff
-+config :cors_plug,
-+  origin: System.fetch_env!("CLIENT_ORIGIN_URL")
-```
-
-Next, open `lib/hello_world_web/endpoint.ex` and add the `CORSPlug` plug above the `Router` plug:
-
-```diff
-   plug Plug.Session, @session_options
-+  plug CORSPlug
-   plug HelloWorldWeb.Router
-```
-
 ### Register an Elixir/Phoenix API with Auth0
 
 - Open the [APIs](https://manage.auth0.com/#/apis) section of the Auth0 Dashboard.
