@@ -5,6 +5,19 @@ import Config
 # system starts, so it is typically used to load production configuration
 # and secrets from environment variables or elsewhere. Do not define
 # any compile-time configuration in here, as it won't be applied.
+
+DotenvParser.load_file(".env")
+
+config :cors_plug,
+  max_age: 86400,
+  methods: ["GET"],
+  headers: ["Authorization", "Content-Type"],
+  origin:
+    System.get_env("CLIENT_ORIGIN_URL") ||
+      raise("""
+      The required environment variable CLIENT_ORIGIN_URL is missing. Check .env file.
+      """)
+
 # The block below contains prod specific runtime configuration.
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
@@ -26,7 +39,7 @@ if config_env() == :prod do
       # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
       # for details about using IPv6 vs IPv4 and loopback vs public addresses.
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
-      port: String.to_integer(System.get_env("PORT") || "4000")
+      port: String.to_integer(System.get_env("PORT", "6060"))
     ],
     secret_key_base: secret_key_base
 
