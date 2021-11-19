@@ -12,7 +12,7 @@ defmodule HelloWorld.Auth.Token do
   def token_config do
     default_claims(skip: [:aud, :iss])
     |> add_claim("iss", nil, &(&1 == iss()))
-    |> add_claim("aud", nil, &(&1 == aud()))
+    |> add_claim("aud", nil, &(aud() in &1))
   end
 
   defp iss(), do: Auth0Config.auth0_base_url()
