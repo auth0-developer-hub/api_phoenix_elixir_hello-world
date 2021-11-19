@@ -40,7 +40,9 @@ defmodule HelloWorld.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:cors_plug, "~> 2.0"},
-      {:dotenv_parser, "~> 1.2"}
+      {:dotenv_parser, "~> 1.2"},
+      {:joken, "~> 2.4"},
+      {:joken_jwks, "~> 1.5"}
     ]
   end
 
