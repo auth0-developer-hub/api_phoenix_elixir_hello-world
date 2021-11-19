@@ -5,8 +5,14 @@ defmodule HelloWorldWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", HelloWorldWeb do
+  scope "/api", HelloWorldWeb.API, as: :api do
     pipe_through :api
+
+    scope "/messages" do
+      get "/public", MessageController, :public
+      get "/protected", MessageController, :protected
+      get "/admin", MessageController, :admin
+    end
   end
 
   # Enables LiveDashboard only for development
