@@ -18,6 +18,14 @@ config :cors_plug,
       The required environment variable CLIENT_ORIGIN_URL is missing. Check .env file.
       """)
 
+config :hello_world,
+  auth0_domain:
+    System.get_env("AUTH0_DOMAIN") ||
+      raise("The required environment variable AUTH0_DOMAIN is missing. Check .env file."),
+  auth0_audience:
+    System.get_env("AUTH0_AUDIENCE") ||
+      raise("The required environment variable AUTH0_AUDIENCE is missing. Check .env file.")
+
 # The block below contains prod specific runtime configuration.
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
