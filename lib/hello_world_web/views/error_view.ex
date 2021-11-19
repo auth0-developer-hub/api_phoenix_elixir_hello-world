@@ -28,6 +28,14 @@ defmodule HelloWorldWeb.ErrorView do
     }
   end
 
+  def render("403.json", _assigns) do
+    %{
+      error: "insufficient_permissions",
+      error_description: "Insufficient claim for the token",
+      message: "Permission denied"
+    }
+  end
+
   def render("404.json", _assigns) do
     %{message: "Not Found"}
   end
