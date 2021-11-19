@@ -13,9 +13,10 @@ defmodule HelloWorld.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: HelloWorld.PubSub},
       # Start the Endpoint (http/https)
-      HelloWorldWeb.Endpoint
+      HelloWorldWeb.Endpoint,
       # Start a worker by calling: HelloWorld.Worker.start_link(arg)
       # {HelloWorld.Worker, arg}
+      HelloWorld.Auth.Auth0Strategy
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
