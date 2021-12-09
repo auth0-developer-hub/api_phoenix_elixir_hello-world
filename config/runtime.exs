@@ -6,6 +6,8 @@ import Config
 # and secrets from environment variables or elsewhere. Do not define
 # any compile-time configuration in here, as it won't be applied.
 
+DotenvParser.load_file(".env")
+
 config :cors_plug,
   max_age: 86400,
   methods: ["GET"],
