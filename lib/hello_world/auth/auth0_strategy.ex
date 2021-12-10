@@ -3,12 +3,17 @@ defmodule HelloWorld.Auth.Auth0Strategy do
   Defines a custom Strategy for JokenJwks using a custom jwks domain.
   """
   use JokenJwks.DefaultStrategyTemplate
+  alias HelloWorld.Auth.Auth0Config
 
   def init_opts(opts) do
     Keyword.merge(opts, jwks_url: jwks_url())
   end
 
   defp jwks_url do
-    Application.get_env(:hello_world, :auth0_domain) <> "/.well-known/jwks.json"
+    auth0_domain() <> ".well-known/jwks.json"
+  end
+
+  defp auth0_domain do
+    Auth0Config.auth0_domain()
   end
 end

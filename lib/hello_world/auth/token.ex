@@ -4,7 +4,7 @@ defmodule HelloWorld.Auth.Token do
   """
   use Joken.Config, default_signer: nil
 
-  alias HelloWorld.Auth.Auth0Strategy
+  alias HelloWorld.Auth.{Auth0Config, Auth0Strategy}
 
   add_hook(JokenJwks, strategy: Auth0Strategy)
 
@@ -15,6 +15,6 @@ defmodule HelloWorld.Auth.Token do
     |> add_claim("aud", nil, &(&1 == aud()))
   end
 
-  defp iss(), do: Application.get_env(:hello_world, :auth0_domain)
-  defp aud(), do: Application.get_env(:hello_world, :auth0_audience)
+  defp iss(), do: Auth0Config.auth0_domain()
+  defp aud(), do: Auth0Config.auth0_audience()
 end
