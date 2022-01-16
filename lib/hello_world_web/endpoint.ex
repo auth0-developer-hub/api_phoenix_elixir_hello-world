@@ -43,6 +43,12 @@ defmodule HelloWorldWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug
+  plug CORSPlug,
+    origin: &__MODULE__.allowed_origins/0,
+    max_age: 86400,
+    methods: ["GET"],
+    headers: ["Authorization", "Content-Type"]
   plug HelloWorldWeb.Router
+
+  def allowed_origins(), do: Application.fetch_env!(:cors_plug, :origin)
 end
