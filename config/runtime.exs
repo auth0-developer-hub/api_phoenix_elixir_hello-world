@@ -6,6 +6,10 @@ import Config
 # and secrets from environment variables or elsewhere. Do not define
 # any compile-time configuration in here, as it won't be applied.
 
+if config_env() == :dev do
+  DotenvParser.load_file(".env")
+end
+
 config :cors_plug,
   origin:
     System.get_env("CLIENT_ORIGIN_URL") ||
@@ -47,6 +51,4 @@ if config_env() == :prod do
   #
   # Then you can assemble a release by calling `mix release`.
   # See `mix help release` for more information.
-else
-  DotenvParser.load_file(".env")
 end
