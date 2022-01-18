@@ -6,7 +6,7 @@ defmodule HelloWorldWeb.Router do
 
     plug :put_secure_browser_headers, %{
       "x-xss-protection" => "0",
-      "strict-transport-security" => "max-age=31536000 ; includeSubDomains",
+      "strict-transport-security" => "max-age=31536000; includeSubDomains",
       "x-frame-options" => "deny",
       "content-security-policy" => "default-src 'self'; frame-ancestors 'none';",
       "cache-control" => "no-cache, no-store, max-age=0, must-revalidate",
