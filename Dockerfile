@@ -3,33 +3,16 @@ RUN groupadd auth0 && useradd -m developer -g auth0
 RUN mkdir app && chown -R developer:auth0 /app
 WORKDIR /app
 USER developer
-
-# install hex + rebar
 RUN mix local.hex --force && \
     mix local.rebar --force
-
-# set env to prod
 ENV MIX_ENV=prod
-
-# install mix dependencies
 COPY mix.exs mix.lock ./
 RUN mix deps.get --only $MIX_ENV
-
-# copy compile configuration files
-RUN mkdir config
 COPY config/config.exs config/$MIX_ENV.exs config/
-
-# compile dependencies
 RUN mix deps.compile
-
-# compile project
 COPY lib lib
 RUN mix compile
-
-# copy runtime configuration file
 COPY config/runtime.exs config/
-
-# assemble release
 RUN mix release
 
 FROM debian:buster-slim@sha256:b7d8b4fc7754e9bd3cc19e65c64fe88a17e0fde012308a741ddc8e20b291ae2e
