@@ -1,8 +1,8 @@
 FROM hexpm/elixir:1.13.2-erlang-24.1.2-debian-buster-20210902-slim@sha256:72c8db81d302cc82d4a3b9fc63a959742aef1437b59d89b512918b973b3cc1dd AS build
 RUN groupadd auth0 && useradd -m developer -g auth0
-RUN mkdir app && chown -R developer:auth0 /app
-WORKDIR /app
 USER developer
+RUN mkdir /home/developer/app
+WORKDIR /home/developer/app
 RUN mix local.hex --force && \
     mix local.rebar --force
 ENV MIX_ENV=prod
@@ -21,5 +21,6 @@ RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 local
 RUN groupadd auth0 && useradd -m developer -g auth0
 USER developer
 WORKDIR /app
-COPY --from=build --chown=developer:auth0 /app/_build/prod/rel/hello_world ./
+EXPOSE 6060
+COPY --from=build --chown=developer:auth0 /home/developer/app/_build/prod/rel/hello_world ./
 ENTRYPOINT ["bin/hello_world", "start"]
