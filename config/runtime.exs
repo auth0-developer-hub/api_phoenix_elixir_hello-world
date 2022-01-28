@@ -6,12 +6,11 @@ import Config
 # and secrets from environment variables or elsewhere. Do not define
 # any compile-time configuration in here, as it won't be applied.
 
-DotenvParser.load_file(".env")
+if config_env() == :dev do
+  DotenvParser.load_file(".env")
+end
 
 config :cors_plug,
-  max_age: 86400,
-  methods: ["GET"],
-  headers: ["Authorization", "Content-Type"],
   origin:
     System.get_env("CLIENT_ORIGIN_URL") ||
       raise("""
