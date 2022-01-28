@@ -1,17 +1,20 @@
 defmodule HelloWorldWeb.Router do
   use HelloWorldWeb, :router
+  use Plug.ErrorHandler
+
+  @headers %{
+    "x-xss-protection" => "0",
+    "strict-transport-security" => "max-age=31536000; includeSubDomains",
+    "x-frame-options" => "deny",
+    "content-security-policy" => "default-src 'self'; frame-ancestors 'none';",
+    "cache-control" => "no-cache, no-store, max-age=0, must-revalidate",
+    "server" => "undisclosed"
+  }
 
   pipeline :api do
     plug :accepts, ["json"]
 
-    plug :put_secure_browser_headers, %{
-      "x-xss-protection" => "0",
-      "strict-transport-security" => "max-age=31536000 ; includeSubDomains",
-      "x-frame-options" => "deny",
-      "content-security-policy" => "default-src 'self'; frame-ancestors 'none';",
-      "cache-control" => "no-cache, no-store, max-age=0, must-revalidate",
-      "server" => "undisclosed"
-    }
+    plug :put_secure_browser_headers, @headers
   end
 
   scope "/api", HelloWorldWeb.API, as: :api do
@@ -22,6 +25,14 @@ defmodule HelloWorldWeb.Router do
       get "/protected", MessageController, :protected
       get "/admin", MessageController, :admin
     end
+  end
+
+  @impl Plug.ErrorHandler
+  def handle_errors(conn, _assings) do
+    conn
+    |> put_view(HelloWorldWeb.ErrorView)
+    |> put_secure_browser_headers(@headers)
+    |> render("404.json")
   end
 
   # Enables LiveDashboard only for development
