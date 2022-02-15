@@ -11,6 +11,10 @@ defmodule HelloWorldWeb.ErrorView do
     %{message: "Not Found"}
   end
 
+  def render("500.json", _assigns) do
+    %{message: "Internal Server Error"}
+  end
+
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".
