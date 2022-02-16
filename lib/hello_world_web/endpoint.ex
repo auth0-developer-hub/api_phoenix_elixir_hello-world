@@ -41,7 +41,7 @@ defmodule HelloWorldWeb.Endpoint do
   plug Plug.Session, @session_options
 
   plug CORSPlug,
-    origin: &__MODULE__.allowed_origins/0,
+    origin: &HelloWorldWeb.Endpoint.allowed_origins/0,
     max_age: 86400,
     methods: ["GET"],
     headers: ["Authorization", "Content-Type"]
