@@ -34,11 +34,12 @@ defmodule HelloWorld.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.6.2"},
-      {:phoenix_live_dashboard, "~> 0.5"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:cors_plug, "~> 2.0"},
+      {:dotenv_parser, "~> 1.2"}
     ]
   end
 
