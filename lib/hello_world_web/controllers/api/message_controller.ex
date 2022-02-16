@@ -1,7 +1,7 @@
 defmodule HelloWorldWeb.API.MessageController do
   use HelloWorldWeb, :controller
 
-  @metadata %{ api: "api_phoenix_elixir_hello-world", branch: "starter"}
+  @metadata %{api: "api_phoenix_elixir_hello-world", branch: "starter"}
 
   @spec public(Plug.Conn.t(), any) :: Plug.Conn.t()
   def public(conn, _params) do
