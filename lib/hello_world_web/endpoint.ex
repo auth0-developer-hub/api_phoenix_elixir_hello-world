@@ -10,7 +10,7 @@ defmodule HelloWorldWeb.Endpoint do
     signing_salt: "/zLugau6"
   ]
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  # socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -28,10 +28,6 @@ defmodule HelloWorldWeb.Endpoint do
     plug Phoenix.CodeReloader
   end
 
-  plug Phoenix.LiveDashboard.RequestLogger,
-    param_key: "request_logger",
-    cookie_key: "request_logger"
-
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
@@ -43,5 +39,16 @@ defmodule HelloWorldWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  plug CORSPlug,
+    origin: &HelloWorldWeb.Endpoint.allowed_origins/0,
+    max_age: 86400,
+    methods: ["GET"],
+    headers: ["Authorization", "Content-Type"]
+
+  plug HelloWorldWeb.Plugs.SecurityHeaders
+
   plug HelloWorldWeb.Router
+
+  def allowed_origins(), do: Application.fetch_env!(:cors_plug, :origin)
 end
